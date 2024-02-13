@@ -5,6 +5,7 @@ use std::{
 };
 use std::process::exit;
 
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878");
     match listener{
@@ -36,12 +37,13 @@ fn handle_connection(mut stream: TcpStream){
     println!("Request: {:#?}", http_request);
 
     let status_line = "HTTP/1.1 200 OK";
-    let contents = fs::read_to_string("../hello.html").unwrap();
+    let contents = fs::read("silly.jpeg").unwrap();
     let length = contents.len();
 
     let response = 
-        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n");
     
     stream.write_all(response.as_bytes()).unwrap();
+    stream.write_all(&contents).unwrap();
 
 }
