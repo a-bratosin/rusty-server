@@ -37,7 +37,7 @@ fn handle_connection(mut stream: TcpStream){
     println!("Request: {:#?}", http_request);
 
     let status_line = "HTTP/1.1 200 OK";
-    let contents = fs::read("silly.jpeg").unwrap();
+    let contents = fs::read("media/silly.jpeg").unwrap();
     let length = contents.len();
 
     let response = 
