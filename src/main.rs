@@ -1,14 +1,15 @@
 use std::{
-    fs::{self, read_to_string},
+    fs,
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
-    thread,
+    thread::{self, Thread},
     time::Duration,
 };
 use std::process::exit;
-
+use rusty_server::ThreadPool;
 
 fn main() {
+    
     let listener = TcpListener::bind("127.0.0.1:7878");
     match listener{
         Err(_) => {
@@ -18,12 +19,13 @@ fn main() {
         Ok(_)=>{println!("Connected to port!")},
     }
 
+    let pool = ThreadPool::new(4);
 
     for stream in listener.unwrap().incoming(){
         let stream = stream.unwrap();
 
      //   println!("Connection established! :D");
-        thread::spawn(||{
+        pool.execute(|| {
             handle_connection(stream);
         });
     }
