@@ -23,7 +23,9 @@ fn main() {
         let stream = stream.unwrap();
 
      //   println!("Connection established! :D");
-        handle_connection(stream);
+        thread::spawn(||{
+            handle_connection(stream);
+        });
     }
     println!("Hello, world!");
 }
@@ -41,14 +43,16 @@ fn handle_connection(mut stream: TcpStream){
             thread::sleep(Duration::from_secs(5));
             ("HTTP/1.1 200 OK", "media/hello.html")
         },
+        "GET /silly.jpeg HTTP/1.1" => ("HTTP/1.1 200 OK", "media/silly.jpeg"),
         _ => ("HTTP/1.1 404 NOT FOUND", "media/404.html"),
     };
 
-    let contents = fs::read_to_string(filename).unwrap();
+    let contents = fs::read(filename).unwrap();
     let length = contents.len();
 
     let response =
-        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n");
 
     stream.write_all(response.as_bytes()).unwrap();    
+    stream.write_all(&contents).unwrap();
 }
